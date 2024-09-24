@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ic-webapp
+    env: prod
+  name: ic-webapp
+  namespace: icgroup
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ic-webapp
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: ic-webapp
+    spec:
+      containers:
+      - image: ulrichsteve/ic-webapp:v1.0
+        name: ic-webapp
+        env:
+          - name: ODOO_URL
+            value: ""
+          - name: PGADMIN_URL
+            value: ""
+        ports:
+          - containerPort: 8080
+        initContainers:
+          - name: check-link
+            image: busybox
+            command: ['sh', '-c', 'until curl -sSf http://; do echo waiting for my link; sleep 2; done;']

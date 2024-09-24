@@ -1,0 +1,60 @@
+version: '3.1'
+services:
+  web:
+    container_name: odoo
+    image: odoo:13.0
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+    environment:
+      - USER=odoo
+      - PASSWORD=odoo
+      - HOST=db
+    networks:
+      - icwebapp_network
+  db:
+    container_name: db
+    image: postgres:10
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+    networks:
+      - icwebapp_network
+  
+  ic-webapp:
+    container_name: ic-webapp
+    image: ic-webapp:v1.0
+    environment:
+      - "ODOO_URL="
+      - "PGADMIN_URL="
+    ports:
+      - "8080:8080"
+    networks:
+      - icwebapp_network
+  pg-admin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=odoo@odoo.odoo
+      - PGADMIN_DEFAULT_PASSWORD=odoo
+    networks:
+      - icwebapp_network
+    ports:
+      - 80:80
+volumes:
+  odoo-web-data:
+  odoo-db-data:
+
+networks:
+  icwebapp_network:
+    driver: bridge
+    name: icwebapp_network
