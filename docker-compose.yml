@@ -19,7 +19,7 @@ services:
       - icwebapp_network
   db:
     container_name: db
-    image: postgres:15
+    image: postgres:10
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_PASSWORD=odoo
