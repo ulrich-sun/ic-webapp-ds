@@ -3,8 +3,8 @@ name: ci
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'ic-webapp/**'
+    # paths:
+    #   - 'ic-webapp/**'
 
 jobs:
   unit-test:
