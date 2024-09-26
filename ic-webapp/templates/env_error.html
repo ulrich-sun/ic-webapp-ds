@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Environment Error</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            padding: 50px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #e74c3c;
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2em;
+        }
+        .error-list {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f9ebea;
+            color: #c0392b;
+            border: 1px solid #e74c3c;
+            border-radius: 5px;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            color: #fff;
+            background-color: #3498db;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        a:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ouuups!!!!!!!!!!</h1>
+        <p>It seems that the following environment variables are missing:</p>
+        <div class="error-list">
+            {% if missing_vars %}
+                <ul>
+                    {% for var in missing_vars %}
+                        <li>{{ var }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>All environment variables are set correctly. Something else went wrong.</p>
+            {% endif %}
+        </div>
+        <a href="{{ url_for('main') }}">Go back to Home</a>
+    </div>
+</body>
+</html>
