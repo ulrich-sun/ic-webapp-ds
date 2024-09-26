@@ -1,0 +1,63 @@
+name: ci
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'ic-webapp/**'
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: Checkout code
+        uses: actions/checkout@v4
+      - 
+        name: Install dependencies
+        run: |
+          cd ic-webapp
+          pip install -r requirements.txt
+      - 
+        name: Run tests
+        run: |
+          cd ic-webapp/tests
+          python -m unittest discover -s . -p 'test_*.py'
+
+  docker:
+    runs-on: ubuntu-latest
+    name: docker build and push image
+    env:      
+      DOCKERHUB_IMAGE: ic-webapp
+      DOCKERHUB_USERNAME: f3lin
+      DOCKERHUB_REPOSITORY: f3lin
+    steps:
+      - 
+        name: Checkout code
+        uses: actions/checkout@v4
+        
+      - 
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: $DOCKERHUB_USERNAME
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - 
+        name: Automatic Tagging of Releases
+        id: increment-git-tag
+        run: |
+          cd ic-webapp/scripts
+          bash git_update_tag.sh -v patch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+      - 
+        name: Build, Tag, and Push the Image to Docker Hub
+        id: build-image
+        env:
+          IMAGE_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
+        run: |
+          cd ic-webapp 
+          docker build -t $DOCKERHUB_REPOSITORY/$DOCKERHUB_IMAGE:$IMAGE_TAG .
+          docker push $DOCKERHUB_REPOSITORY/$DOCKERHUB_IMAGE:$IMAGE_TAG
