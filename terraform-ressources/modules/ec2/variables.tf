@@ -8,7 +8,7 @@ variable "instance_type" {
 variable "sg_id" {
 }
 variable "key_name" {
-  default = "sun.pem"
+  default = "sun"
 }
 
 variable "subnet_id" {
