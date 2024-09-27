@@ -18,4 +18,8 @@ resource "aws_instance" "name" {
   tags = {
     Name = var.vm_name
   }
+
+  provisioner "local-exec" {
+    command = "echo IP: ${var.public_ip} > /var/jenkins_home/workspace/${var.projet_name}/public_ip.txt"
+  }
 }
