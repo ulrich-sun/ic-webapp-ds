@@ -1,0 +1,53 @@
+---
+- hosts: all
+  become: true
+  vars_files: 
+  
+  tasks:
+    - name: update
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: install apache
+      apt:
+        name:
+          - apache2
+          - php
+        state: present
+        update_cache: yes 
+
+    - name: remove index file
+      file: 
+        path: /var/www/html/index.html
+        state: absent 
+    
+    - name: upload code
+      copy:
+        src: code/
+        dest: /var/www/html/
+
+    - name: start or restart apache
+      service: 
+        name: apache2
+        state: started
+        enabled: yes 
+
+    - name: modification 1
+      copy:
+        src: code/
+        dest: /var/www/html/
+      notify: restart apache2
+
+
+    - name: modification 2
+      copy:
+        src: code/
+        dest: /var/www/html/
+      notify: restart apache2
+
+  handlers:
+    name: restart apache2
+      service:
+        name: apache2
+        state: restarted
