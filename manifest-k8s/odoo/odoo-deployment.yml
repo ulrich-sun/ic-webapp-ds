@@ -1,56 +1,58 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  
+  name: odoo
   labels:
     app: odoo
-  name: odoo
-  namespace: icgroup
+    env: prod
+  namespace: ic-webapp
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: odoo
-  strategy: {}
   template:
     metadata:
-      
       labels:
         app: odoo
     spec:
       containers:
-      - image: odoo:13.0
+      - image: odoo
         name: odoo
-        env: 
-          - name: USER
-            value: odoo
-          - name: PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: odoo-secret
-                key: PASSWORD
-          - name: HOST
-            value: db
+        env:
+        - name: USER
+          value: toto
+        - name: HOST
+          value: postgres
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: odoo
+              key: PASSWORD 
         ports:
-          - containerPort: 8069
+        - containerPort: 8069
+          name: odoo
         volumeMounts:
-          - name: odoo-etc
-            mountPath: /etc/odoo
-          - name: lib
-            mountPath: /var/lib/odoo
-          - name: addons
-            mountPath: /mnt/extra-addons
+        - name: odoo-persistent-storage
+          mountPath: /etc/odoo
+        - name: lib-odoo-persistent-storage
+          mountPath: /var/lib/odoo
+        - name: extra-addons-persistent-storage
+          mountPath: /mnt/extra-addons
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
       volumes:
-        - name: odoo-etc
-          hostpath:
-            path: /data_k8s/config
-        - name: lib
-          hostPath:
-            path: /data_k8s/lib
-        - name: addons
-          hostPath:
-            path: /data_k8s/addons
-          persistentVolumeClaim:
-            claimName: odoo-pvc
-
-
+      - name: odoo-persistent-storage
+        hostPath:
+          path: /data_docker/config
+      - name: extra-addons-persistent-storage
+        hostPath:
+          path: /data_docker/addons
+      - name: lib-odoo-persistent-storage
+        persistentVolumeClaim:
+          claimName: odoo-pvc
