@@ -4,7 +4,7 @@ resource "aws_instance" "name" {
   vpc_security_group_ids = [ var.sg_id ]
   key_name = var.key_name
   subnet_id = var.subnet_id 
-
+  associate_public_ip_address = true
   ebs_block_device {
     device_name = "/dev/sdf"
     volume_size = 10
