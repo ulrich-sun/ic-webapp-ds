@@ -34,11 +34,11 @@ module "ec2" {
   subnet_id = data.aws_subnet.ds-subnet.id
 }
 
-module "eip" {
-  source = "./modules/eip"
-}
+#module "eip" {
+#  source = "./modules/eip"
+#}
 
-resource "aws_eip_association" "eip_assoc" {
-    instance_id = module.ec2.ec2_id
-    allocation_id = module.eip.eip_id
-}
+#resource "aws_eip_association" "eip_assoc" {
+#    instance_id = module.ec2.ec2_id
+#    allocation_id = module.eip.eip_id
+#}
