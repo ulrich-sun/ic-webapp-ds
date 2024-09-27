@@ -3,4 +3,5 @@
   become: true
   gather_facts: no 
   roles:
-    - install-docker
+    role:
+      - install-docker
