@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-pg-admin
+  labels:
+    app: {{ .Release.Name }}-pg-admin
+    env: {{ .Values.env }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.pgadmin.replicas }}
+  selector:
+    matchLabels: 
+      app: {{ .Release.Name }}-pg-admin
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-pg-admin
+    spec:
+      containers:
+      - image: {{ .Values.pgadmin.image }}
+        name: pg-admin
+        env:
+        - name: PGADMIN_DEFAULT_EMAIL
+          value: {{ .Values.pgadmin.defaultEmail }}
+        - name: PGADMIN_DEFAULT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.pgadmin.secretName }}
+              key: PGADMIN_DEFAULT_PASSWORD
+        ports:
+        - containerPort: {{ .Values.pgadmin.containerPort }}
+          name: postgres
+        volumeMounts:
+        - name: pg-admin-server
+          mountPath: /pgadmin4/servers.json
+          subPath: servers.json
+        - name: pg-admin-data
+          mountPath: /var/lib/pgadmin
+      volumes:
+      - name: pg-admin-server
+        configMap:
+          name: {{ .Values.pgadmin.configMap.name }}
+          items:
+          - key: servers.json
+            path: servers.json    
+      - name: pg-admin-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.pgadmin.pvc.claimName }}

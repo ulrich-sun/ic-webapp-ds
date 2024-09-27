@@ -31,10 +31,11 @@ services:
   
   ic-webapp:
     container_name: ic-webapp
-    image: ic-webapp:v1.0
+    image: f3lin/ic-webapp:v0.1.3
+    # change the url values with your dns/ips
     environment:
-      - "ODOO_URL="
-      - "PGADMIN_URL="
+      - "ODOO_URL=http://odoo.refus.lab:8069"
+      - "PGADMIN_URL=http://pgadmin.refus.lab"
     ports:
       - "8080:8080"
     networks:
@@ -57,3 +58,4 @@ networks:
   icwebapp_network:
     driver: bridge
     name: icwebapp_network
+# --odoo_url http://192.168.243.137:8069 --pgadmin_url http://192.168.243.137:80

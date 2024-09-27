@@ -1,0 +1,99 @@
+env: prod
+namespace: ic-webapp
+
+pgadmin:
+  name: pg-admin
+  service:
+    name: pg-admin
+    port: 5050
+    targetPort: 80
+    nodePort: 30050
+  pv:
+    name: pgadmin-pv
+    storageClassName: manual
+    capacity: 20Gi
+    accessModes:
+      - ReadWriteMany
+    hostPath: /data_k8s/pgadmin4
+  pvc:
+    name: pgadmin-pvc
+    storageClassName: manual
+    accessModes:
+      - ReadWriteMany
+    resources:
+      requests:
+        storage: 5Gi
+  secret:
+    name: pg-admin
+    password: cGdhZG1pbg==
+
+postgres:
+  secret:
+    password: cGdhZG1pbg==
+  appName: postgres
+  secretName: postgres
+  deployment:
+    name: postgres
+  image: postgres:10
+  replicas: 1
+  env:
+    POSTGRES_DB: postgres
+    POSTGRES_USER: toto
+  containerPort: 5432
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "500m"
+    limits:
+      memory: "512Mi"
+      cpu: "1"
+  volume:
+    hostPath: /data_k8s/postgres
+
+odoo:
+  name: odoo
+  service:
+    name: odoo
+    port: 8069
+    targetPort: 8069
+  deployment:
+    replicas: 1
+    image: odoo:14
+    env:
+      - name: HOST
+        value: postgres
+      - name: USER
+        value: toto
+      - name: PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: postgres
+            key: POSTGRES_PASSWORD
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "500m"
+      limits:
+        memory: "1Gi"
+        cpu: "1"
+ic-webapp:
+  name: ic-webapp
+  service:
+    name: ic-webapp
+    port: 8080
+    targetPort: 8080
+  deployment:
+    replicas: 1
+    image: ulrich-steve/ic-webapp:v1.0
+    env:
+      - name: DATABASE_URL
+        value: postgres://toto:{{ .Values.postgres.env.POSTGRES_PASSWORD }}@postgres:5432/postgres
+      - name: ODOO_URL
+        value: http://odoo:8069
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "500m"
+      limits:
+        memory: "512Mi"
+        cpu: "1"

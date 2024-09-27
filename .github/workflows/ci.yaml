@@ -3,8 +3,8 @@ name: ci
 on:
   push:
     branches: [ main ]
-    # paths:
-    #   - 'ic-webapp/**'
+    paths:
+      - 'src/**'
 
 jobs:
   unit-test:
@@ -16,17 +16,18 @@ jobs:
       - 
         name: Install dependencies
         run: |
-          cd ic-webapp
+          cd src
           pip install -r requirements.txt
       - 
         name: Run tests
         run: |
-          cd ic-webapp
+          cd src
           python -m unittest tests/test_app.py
 
   docker:
     runs-on: ubuntu-latest
     name: docker build and push image
+    needs: unit-test  # Ensures docker job runs only if unit-test is successful
     env:      
       DOCKERHUB_IMAGE: ic-webapp
       DOCKERHUB_USERNAME: f3lin
@@ -47,7 +48,7 @@ jobs:
         name: Automatic Tagging of Releases
         id: increment-git-tag
         run: |
-          cd ic-webapp/scripts
+          cd src/scripts
           bash git_update_tag.sh -v patch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -58,6 +59,6 @@ jobs:
         env:
           IMAGE_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
         run: |
-          cd ic-webapp 
+          cd src 
           docker build -t $DOCKERHUB_REPOSITORY/$DOCKERHUB_IMAGE:$IMAGE_TAG .
           docker push $DOCKERHUB_REPOSITORY/$DOCKERHUB_IMAGE:$IMAGE_TAG

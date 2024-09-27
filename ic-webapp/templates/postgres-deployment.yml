@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.postgres.deployment.name }}
+  labels:
+    app: {{ .Values.postgres.appName }}
+    env: {{ .Values.env }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.postgres.replicas }}
+  selector:
+    matchLabels: 
+      app: {{ .Values.postgres.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.postgres.appName }}
+    spec:
+      containers:
+      - image: {{ .Values.postgres.image }}
+        name: {{ .Values.postgres.deployment.name }}
+        env:
+        - name: POSTGRES_DB
+          value: {{ .Values.postgres.env.POSTGRES_DB }}
+        - name: POSTGRES_USER
+          value: {{ .Values.postgres.env.POSTGRES_USER }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.postgres.secretName }}
+              key: POSTGRES_PASSWORD
+        ports:
+        - containerPort: {{ .Values.postgres.containerPort }}
+          name: postgres
+        volumeMounts:
+        - name: pg-data
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            memory: {{ .Values.postgres.resources.requests.memory }}
+            cpu: {{ .Values.postgres.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.postgres.resources.limits.memory }}
+            cpu: {{ .Values.postgres.resources.limits.cpu }}
+      volumes:
+      - name: pg-data
+        hostPath:
+          path: {{ .Values.postgres.volume.hostPath }}
