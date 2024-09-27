@@ -1,2 +1,51 @@
 ---
 # tasks file for install-docker
+- name: update system
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: install prerequisites
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - curl
+    - python3
+    - python3-pip
+    - ca-certificates
+    - apt-transport-https
+    - software-properties-common  
+
+- name: add gpg
+  apt_key: 
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: add docker repository
+  apt_repository: 
+    repo: "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable"
+    state: present 
+
+- name: docker install
+  apt:
+    name: docker-ce
+    state: present
+
+- name: add user inside docker group
+  user:
+    name: "{{ ansible_user }}"
+    group: docker 
+    append: yes 
+
+- name: start docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: install docker compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/v2.29.6/docker-compose-linux-x86_64
+    dest: /usr/local/lib/docker-compose
+    mode: '0755'
