@@ -13,3 +13,7 @@ variable "key_name" {
 
 variable "subnet_id" {
 }
+
+variable "vm_name{
+  default = "ds-vm"
+}

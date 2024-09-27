@@ -16,6 +16,6 @@ resource "aws_instance" "name" {
   }
 
   tags = {
-    Name = "ds-vm"
+    Name = var.vm_name
   }
 }
