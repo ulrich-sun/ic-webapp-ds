@@ -3,15 +3,15 @@ provider "aws" {
 }
 
 data "aws_vpc" "ds-vpc" {
-  id = "vpc-0c385342491bacfd2"
+  id = "vpc-0d69c6e9db73ad4d0"
 }
 
 data "aws_subnet" "ds-subnet" {
-  id = "subnet-05091b46f3d662b8d"
+  id = "subnet-025fc5c8806c61117"
 }
 
 data "aws_security_group" "ds-sg" {
-  id = "sg-0e1dd1f1ca497e251"
+  id = "sg-0b5b395f56fad1e13"
 }
 
 #module "vpc" {
