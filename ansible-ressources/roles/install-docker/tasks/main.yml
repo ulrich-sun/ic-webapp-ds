@@ -34,14 +34,14 @@
 
 - name: install docker
   get_url: 
-    url: curl -fsSL https://get.docker.com -o get-docker.sh
+    url: https://get.docker.com
     dest: /tmp/get-docker.sh
     mode: '0755'
 
 - name: deploy
   command: sh /tmp/get-docker.sh
   become: yes 
-  
+
 - name: add user inside docker group
   user:
     name: "{{ ansible_user }}"
