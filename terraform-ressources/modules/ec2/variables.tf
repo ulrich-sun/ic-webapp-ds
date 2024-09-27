@@ -5,7 +5,7 @@ variable "instance_type" {
   default = "t2.medium"
 }
 
-variable "sg_name" {
+variable "sg_id" {
 }
 variable "key_name" {
   default = "sun.pem"
