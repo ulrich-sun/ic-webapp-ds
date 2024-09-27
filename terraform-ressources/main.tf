@@ -2,14 +2,22 @@ provider "aws" {
   region = "us-east-1"
 }
 
-module "vpc" {
-  source = "./modules/vpc"
+data "aws_vpc" "ds-vpc" {
+  id = "vpc-06eab21c0451354ec"
 }
+
+data "aws_subnet" "ds-subnet" {
+  id = "subnet-070112404f7ba6ae9"
+}
+
+#module "vpc" {
+#  source = "./modules/vpc"
+#}
 
 module "sg" {
   source = "./modules/sg"
   sg_name = "ds-sg"
-  vpc_id = module.vpc.vpc_id
+  vpc_id = data.aws_vpc.ds-vpc.id
 }
 
 module "ec2" {
@@ -18,7 +26,8 @@ module "ec2" {
   instance_type = "t2.medium"
   sg_id = module.sg.sg_id
   key_name = "sun"
-  subnet_id = module.vpc.subnet_id
+  vm_name = var.vm_name
+  subnet_id = data.aws_subnet.ds-subnet.id
 }
 
 module "eip" {
