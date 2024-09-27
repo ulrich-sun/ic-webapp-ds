@@ -1,7 +1,7 @@
 resource "aws_instance" "name" {
   ami = var.ami
   instance_type = var.instance_type 
-  security_groups = [ var.sg_name ]
+  security_groups = ["${var.sg_name}" ]
   key_name = var.key_name
   subnet_id = var.subnet_id 
 
