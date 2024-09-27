@@ -1,11 +1,10 @@
-all:
-  prod:
-    children:
-      ic-webapp:
-        hosts:
-          ic-webapp-server:
-  dev:
-    children:
-      dev-server:
-        hosts:
-          dev-server:
+prod:
+  children:
+    ic-webapp:
+      hosts:
+        ic-webapp-server:
+dev:
+  children:
+    dev-server:
+      hosts:
+        dev-server:
