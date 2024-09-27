@@ -17,21 +17,31 @@
     - apt-transport-https
     - software-properties-common  
 
-- name: add gpg
-  apt_key: 
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
+# - name: add gpg
+#   apt_key: 
+#     url: https://download.docker.com/linux/ubuntu/gpg
+#     state: present
 
-- name: add docker repository
-  apt_repository: 
-    repo: "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable"
-    state: present 
+# - name: add docker repository
+#   apt_repository: 
+#     repo: "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable"
+#     state: present 
 
-- name: docker install
-  apt:
-    name: docker-ce
-    state: present
+# - name: docker install
+#   apt:
+#     name: docker-ce
+#     state: present
 
+- name: install docker
+  get_url: 
+    url: curl -fsSL https://get.docker.com -o get-docker.sh
+    dest: /tmp/get-docker.sh
+    mode: '0755'
+
+- name: deploy
+  command: sh /tmp/get-docker.sh
+  become: yes 
+  
 - name: add user inside docker group
   user:
     name: "{{ ansible_user }}"
