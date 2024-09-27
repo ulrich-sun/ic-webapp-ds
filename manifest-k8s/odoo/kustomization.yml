@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - odoo-secret.yml
+  - odoo-pvc.yml
+  - odoo-pv.yml
+  - odoo-deployment.yml
+  - odoo-nodeport.yml
+  

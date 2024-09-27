@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    env: {{ .Values.env }}
+    app: {{ .Release.Name }}-ic-webapp
+  name: {{ .Release.Name }}-ic-webapp
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.icWebapp.replicas }}
+  selector:
+    matchLabels: 
+      app: {{ .Release.Name }}-ic-webapp
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-ic-webapp
+    spec:
+      containers:
+      - image: {{ .Values.icWebapp.image.repository }}:{{ .Values.icWebapp.image.tag }}
+        name: ic-webapp
+        env:
+        - name: ODOO_URL
+          value: http://{{ .Values.host }}:{{ .Values.odoo.port }}
+        - name: PGADMIN_URL
+          value: http://{{ .Values.host }}:{{ .Values.pgadmin.port }}
+        ports:
+        - containerPort: 8080
+          name: ic-webapp
+        resources:
+          requests:
+            memory: {{ .Values.icWebapp.resources.requests.memory }}
+            cpu: {{ .Values.icWebapp.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.icWebapp.resources.limits.memory }}
+            cpu: {{ .Values.icWebapp.resources.limits.cpu }}

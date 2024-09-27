@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-odoo
+  labels:
+    app: {{ .Release.Name }}-odoo
+    env: {{ .Values.env }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.odoo.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-odoo
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-odoo
+    spec:
+      containers:
+      - image: {{ .Values.odoo.image.repository }}:{{ .Values.odoo.image.tag }}
+        name: odoo
+        env:
+        - name: USER
+          value: {{ .Values.odoo.env.USER }}
+        - name: HOST
+          value: {{ .Values.odoo.env.HOST }}
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.odoo.secretName }}
+              key: PASSWORD 
+        ports:
+        - containerPort: 8069
+          name: odoo
+        volumeMounts:
+        - name: odoo-persistent-storage
+          mountPath: /etc/odoo
+        - name: lib-odoo-persistent-storage
+          mountPath: /var/lib/odoo
+        - name: extra-addons-persistent-storage
+          mountPath: /mnt/extra-addons
+        resources:
+          requests:
+            memory: {{ .Values.odoo.resources.requests.memory }}
+            cpu: {{ .Values.odoo.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.odoo.resources.limits.memory }}
+            cpu: {{ .Values.odoo.resources.limits.cpu }}
+      volumes:
+      - name: odoo-persistent-storage
+        hostPath:
+          path: {{ .Values.odoo.volumes.odooPersistentStorage.path }}
+      - name: extra-addons-persistent-storage
+        hostPath:
+          path: {{ .Values.odoo.volumes.extraAddonsPersistentStorage.path }}
+      - name: lib-odoo-persistent-storage
+        persistentVolumeClaim:
+          claimName: {{ .Values.odoo.volumes.libOdooPersistentStorage.claimName }}

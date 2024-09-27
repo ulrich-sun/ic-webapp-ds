@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.odoo.pvc.name }}
+  labels:
+    app: {{ .Release.Name }}-odoo
+    env: {{ .Values.env }}
+  namespace: {{ .Values.namespace }}
+spec:
+  storageClassName: {{ .Values.odoo.pvc.storageClassName }}
+  accessModes:
+    - {{ .Values.odoo.pvc.accessModes | join ", " }}
+  resources:
+    requests:
+      storage: {{ .Values.odoo.pvc.resources.requests.storage }}
