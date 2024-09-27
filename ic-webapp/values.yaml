@@ -28,6 +28,8 @@ pgadmin:
     password: cGdhZG1pbg==
 
 postgres:
+  secret:
+    password: cGdhZG1pbg==
   appName: postgres
   secretName: postgres
   deployment:
