@@ -80,9 +80,10 @@ pipeline {
                     terraform init
                     terraform apply -auto-approve
                     '''
-                    def instanceIP=sh(script: 'terraform output -raw instance_ip', returnStdout: true).trim()
+                    instanceIP=$(cat instance_ip.txt)
+                    //def instanceIP=sh(script: 'terraform output -raw instance_ip', returnStdout: true).trim()
                     echo " Voici ton adresse Ip: ${instanceIP}"
-                    writeFile file: 'instance_ip.txt', text: instanceIP 
+                    //writeFile file: 'instance_ip.txt', text: instanceIP 
                 }
             }
         }
@@ -94,7 +95,8 @@ pipeline {
             }
             steps {
                 script {
-                    def instanceIP = readFile('instance_ip.txt').trim()
+                    instanceIP=$(cat instance_ip.txt)
+                    //def instanceIP = readFile('instance_ip.txt').trim()
                     sh '''
                     echo $PRIVATE_AWS_KEY > sun.pem
                     chmod 400 sun.pem
