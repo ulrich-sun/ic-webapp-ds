@@ -38,7 +38,7 @@ pipeline {
                 script {
                     def instanceIP = readFile('instance_ip.txt').trim()
                     sh '''
-                    echo $PRIVATE_AWS_KEY > simple-stack.pem
+                    echo "${PRIVATE_AWS_KEY}" > simple-stack.pem
                     chmod 400 simple-stack.pem
                     pwd
                     ls -l
