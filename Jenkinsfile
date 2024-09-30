@@ -36,13 +36,17 @@ pipeline {
             }
             steps {
                 script {
+                    withCredentials([
+                        file(
+                        credentialsId: 'private_aws_key',
+                        variable: 'credvar')
+                    ])
                     def instanceIP = readFile('instance_ip.txt').trim()
-                    sh '''
-                    echo "${PRIVATE_AWS_KEY}" > simple-stack.pem
-                    chmod 400 simple-stack.pem
-                    pwd
-                    ls -l
-                    '''
+                    
+                    sh 'cp "\$credvar" simple-stack.pem'
+                    sh 'cat simple-stack.pem '
+                    sh 'chmod 400 simple-stack.pem'
+            
                     writeFile file: 'inventory.ini', text: "test-server\n${instanceIP} ansible_user=ubuntu ansible_ssh_private_key_file=../simple-stack.pem"
                     sh '''
                     ls -l
