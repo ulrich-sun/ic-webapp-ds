@@ -5,7 +5,7 @@ pipeline {
         TAG_IMAGE = "v2.0"
         DOCKERHUB_ID = "ulrichsteve"
         DOCKERHUB_PASSWORD = credentials('dockerhub_password') 
-        HOST_IP = "54.157.240.227"
+        HOST_IP = 
         APP_EXPOSED = "8080"
         CONTAINER_PORT = "8080"
 
@@ -79,9 +79,10 @@ pipeline {
                     cd terraform-ressources/
                     terraform init
                     terraform apply -auto-approve
-                    def instanceIP = sh (script: terraform output -raw instance_ip', returnStdout: true).trim()
-                    echo " Voici ton adresse Ip: ${instanceIP}
                     '''
+                    def instanceIP=sh(script: 'terraform output -raw instance_ip', returnStdout: true).trim()
+                    echo " Voici ton adresse Ip: ${instanceIP}"
+                    writeFile file: 'instance_ip.txt', text: instanceIP 
                 }
             }
         }
@@ -98,7 +99,7 @@ pipeline {
                     echo $PRIVATE_AWS_KEY > sun.pem
                     chmod 400 sun.pem
                     '''
-                    write file: 'inventory.ini', test: "test-server\n${instanceIP} ansible_user=ubuntu ansible_ssh_private_key_file=sun.pem"
+                    writeFile file: 'inventory.ini', test: "test-server\n${instanceIP} ansible_user=ubuntu ansible_ssh_private_key_file=sun.pem"
                     sh '''
                     cd ansible-ressources/
                     ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i inventory.ini playbooks/install_docker.yaml

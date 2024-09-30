@@ -20,6 +20,6 @@ resource "aws_instance" "name" {
   }
 
  provisioner "local-exec" {
-   command = "echo IP: ${self.public_ip} > /var/jenkins_home/workspace/${var.projet_name}/public_ip.txt"
+   command = "echo IP: ${self.public_ip} > /var/jenkins_home/workspace/devops/instance_ip.txt"
  }
 }
