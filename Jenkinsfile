@@ -35,12 +35,12 @@ pipeline {
                 script {
                     def instanceIP = readFile('instance_ip.txt').trim()
                     sh '''
-                    echo $PRIVATE_AWS_KEY > simple-stack.pem
+                    echo $PRIVATE_AWS_KEY > ansible-ressources/simple-stack.pem
                     chmod 400 simple-stack.pem
                     pwd
                     ls -l
                     '''
-                    writeFile file: 'inventory.ini', text: "test-server\n${instanceIP} ansible_user=ubuntu ansible_ssh_private_key_file=simple-stack.pem"
+                    writeFile file: 'inventory.ini', text: "test-server\n${instanceIP} ansible_user=ubuntu ansible_ssh_private_key_file=ansible-ressources/simple-stack.pem"
                     sh '''
                     ls -l
                     cd ansible-ressources/
