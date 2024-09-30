@@ -1,0 +1,21 @@
+services:
+    {{ pgadmin_service_name }}:
+        container_name: {{ pgadmin_service_name }}
+        image: {{ pgadmin_image }}
+        ports:
+            - {{ pgadmin_port }}:80
+        networks:
+            - {{ pgadmin_networks }}
+        environment:
+            - PGADMIN_DEFAULT_EMAIL= {{ pgadmin_default_email }}
+            - PGADMIN_DEFAULT_PASSWORD={{ pgadmin_default_password }}
+        volumes:
+            - ${PWD}/servers.json:/pgadmin4/servers.json 
+            - {{ pgadmin_volumes }}:/var/lib/pgadmin
+
+volumes:
+    {{ pgadmin_volumes }}: 
+networks:
+    {{ pgadmin_networks }}:
+        driver: bridge
+        name: {{ pgadmin_networks }}

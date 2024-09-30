@@ -1,2 +1,20 @@
 ---
 # defaults file for odoo_role
+odoo_service_name: odoo
+odoo_image: odoo:13.0
+
+odoo_volumes_data: odoo-web-data
+odoo_volumes_config: /data-odoo/config
+odoo_volumes_addons: /data-odoo/addons
+
+odoo_networks: odoo_networks
+odoo_ports: 8069
+
+odoo_db_name: postgres
+odoo_db_port: 5432
+odoo_db_image: postgres:10
+odoo_db_data: odoo-db-data
+
+odoo_db_user: odoo
+odoo_db_password: odoo
+odoo_db_host: "{{ odoo_db_name }}"

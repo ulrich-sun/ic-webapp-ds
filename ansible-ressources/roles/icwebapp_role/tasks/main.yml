@@ -1,2 +1,17 @@
 ---
 # tasks file for icwebapp_role
+- name: "ic webapp network creation"
+  docker_network:
+    name: "{{ icwebapp_network }}"
+
+- name:  "start ic-webapp container"
+  docker_container:
+    name: "{{ icwebapp_name }}"
+    image: "{{ icwebapp_image_name }}"
+    ports:
+      - "{{ icwebapp_port }}":8080
+    env:
+      ODOO_URL: "{{ odoo_url }}"
+      PGADMIN_URL: "{{ pgadmin_url }}"
+    networks:
+      - name: "{{ icwebapp_network }}"
