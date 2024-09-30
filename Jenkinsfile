@@ -15,7 +15,7 @@ pipeline {
             agent any
             steps {
                 script {
-                    sh' docker build --no-cache -f ./Docker-ressources/Dockerfile -t ${DOCKERHUB_ID}/${IMAGE_NAME}:${TAG_IMAGE} ./Docker-ressources'
+                    sh' docker build --no-cache -f ./Docker-ressources/Dockerfile -t "${DOCKERHUB_ID}/${IMAGE_NAME}:${TAG_IMAGE}" ./Docker-ressources'
                 }
             }
         }
