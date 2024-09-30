@@ -45,7 +45,7 @@ pipeline {
                     echo "Current directory:"
                     pwd
                     ls -l roles
-                    ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i inventory.ini playbooks/install-docker.yaml
+                    ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i ../inventory.ini playbooks/install-docker.yaml
                     '''
                 }
             }
