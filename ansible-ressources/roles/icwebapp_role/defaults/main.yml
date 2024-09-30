@@ -6,6 +6,6 @@ icwebapp_name: ic-webapp
 icwebapp_port: 8080
 docker_id: ulrichsteve
 icwebapp_image: ic-webapp:v1.0
-icwebapp_image_name: "{{ docker_id }}"/"{{ icwebapp_image }}"
-odoo_url: "http://{{ host_ip }}:8069"
-pgadmin_url: "http://{{ host_ip }}:80"
+icwebapp_image_name: "{{ docker_id }}/{{ icwebapp_image }}"
+odoo_url: "http://{{ ansible_host }}:8069"
+pgadmin_url: "http://{{ ansible_host }}:80"

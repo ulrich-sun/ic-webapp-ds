@@ -9,7 +9,7 @@
     name: "{{ icwebapp_name }}"
     image: "{{ icwebapp_image_name }}"
     ports:
-      - "{{ icwebapp_port }}":8080
+      - "{{ icwebapp_port }}:8080"
     env:
       ODOO_URL: "{{ odoo_url }}"
       PGADMIN_URL: "{{ pgadmin_url }}"
