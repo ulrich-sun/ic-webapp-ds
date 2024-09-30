@@ -41,7 +41,6 @@ pipeline {
                     '''
                     writeFile file: 'inventory.ini', text: "test-server\n${instanceIP} ansible_user=ubuntu ansible_ssh_private_key_file=simple-stack.pem"
                     sh '''
-                    //cd ansible-ressources/
                     ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i inventory.ini ansible-ressources/playbooks/install_docker.yaml
                     '''
                 }
