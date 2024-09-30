@@ -1,30 +1,30 @@
 pipeline {
     agent none 
     stages {
-        stage ('Build ec2 on aws using terraform'){
-            agent {
-                docker {
-                    image 'jenkins/jnlp-agent-terraform'
-                }
-            }
-            environment {
-                AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
-                AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
-                PRIVATE_AWS_KEY = credentials('private_aws_key')
-            }
-            steps {
-                script {
-                    sh '''
-                    cd terraform-ressources/
-                    terraform init
-                    terraform apply -auto-approve
-                    '''
-                    def instanceIP = sh(script: 'cat instance_ip.txt', returnStdout: true).trim()
-                    echo "Voici ton adresse IP: ${instanceIP}"
-                    writeFile file: 'instance_ip.txt', text: instanceIP
-                }
-            }
-        }
+        // stage ('Build ec2 on aws using terraform'){
+        //     agent {
+        //         docker {
+        //             image 'jenkins/jnlp-agent-terraform'
+        //         }
+        //     }
+        //     environment {
+        //         AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
+        //         AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
+        //         PRIVATE_AWS_KEY = credentials('private_aws_key')
+        //     }
+        //     steps {
+        //         script {
+        //             sh '''
+        //             cd terraform-ressources/
+        //             terraform init
+        //             terraform apply -auto-approve
+        //             '''
+        //             def instanceIP = sh(script: 'cat instance_ip.txt', returnStdout: true).trim()
+        //             echo "Voici ton adresse IP: ${instanceIP}"
+        //             writeFile file: 'instance_ip.txt', text: instanceIP
+        //         }
+        //     }
+        // }
         stage ('stage ansible'){
             agent {
                 docker {
@@ -36,17 +36,13 @@ pipeline {
             }
             steps {
                 script {
-                    withCredentials([
-                        file(
-                        credentialsId: 'private_aws_key',
-                        variable: 'credvar')
-                    ])
                     def instanceIP = readFile('instance_ip.txt').trim()
-                    
-                    sh 'cp "\$credvar" simple-stack.pem'
-                    sh 'cat simple-stack.pem '
-                    sh 'chmod 400 simple-stack.pem'
-            
+                    sh '''
+                    cat "${PRIVATE_AWS_KEY}" > simple-stack.pem
+                    chmod 400 simple-stack.pem
+                    pwd
+                    ls -l
+                    '''
                     writeFile file: 'inventory.ini', text: "test-server\n${instanceIP} ansible_user=ubuntu ansible_ssh_private_key_file=../simple-stack.pem"
                     sh '''
                     ls -l
