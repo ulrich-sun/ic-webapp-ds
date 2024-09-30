@@ -1,10 +1,10 @@
 all:
   children:
-    prod:
-      hosts:
-        ic-webapp-server:
-    #       # ansible_host: 34.224.165.78
-    #       # ansible_user: ubuntu
+    # prod:
+    #   hosts:
+    #     ic-webapp-server:
+    # #       # ansible_host: 34.224.165.78
+    # #       # ansible_user: ubuntu
     dev:
       hosts:
         dev-server:

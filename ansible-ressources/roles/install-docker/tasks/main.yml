@@ -54,6 +54,10 @@
 - name: deploy
   command: sh /tmp/get-docker.sh
   become: yes 
+- name: Ensure docker group exists
+  group:
+    name: docker
+    state: present
 - name: add user inside docker group
   user:
     name: "{{ ansible_user }}"

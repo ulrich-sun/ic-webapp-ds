@@ -1,15 +1,12 @@
 ---
 # defaults file for pgadmin_role
-
-pg_admin_init_config_name: pgadmin
-pg_admin_init_config_group: postgres_group
-pg_admin_init_config_host: postgres
-pg_admin_init_config_username: odoo_user
-
+pgadmin_data_volume: pgadmin_data
+pgadmin_network: ic_network_pgadmin
+pg_admin_email: odoo@gmail.com
+pg_admin_password: odoo_pgadmin_password
 pgadmin_service_name: pgadmin
-pgadmin_image:  dpage/pgadmin4
-pgadmin_port: 80
-pgadmin_networks: pgadmin_networks
-pgadmin_default_email: odoo@odoo.com
-pgadmin_default_password: odoo
-pgadmin_volumes: pgadmin_data
+pgadmin_container_name: pgadmin
+pg_admin_init_config_name: docker_postgres
+pg_admin_init_config_group: docker_postgres_group
+pg_admin_init_config_host: "{{ ansible_host }}"
+pg_admin_init_config_username: odoo_user
