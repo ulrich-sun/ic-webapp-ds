@@ -35,10 +35,10 @@ pipeline {
                 script {
                     def instanceIP = readFile('instance_ip.txt').trim()
                     sh '''
-                    echo $PRIVATE_AWS_KEY > sun.pem
-                    chmod 400 sun.pem
+                    echo $PRIVATE_AWS_KEY > simple-stack.pem
+                    chmod 400 simple-stack.pem
                     '''
-                    writeFile file: 'inventory.ini', text: "test-server\n${instanceIP} ansible_user=ubuntu ansible_ssh_private_key_file=sun.pem"
+                    writeFile file: 'inventory.ini', text: "test-server\n${instanceIP} ansible_user=ubuntu ansible_ssh_private_key_file=simple-stack.pem"
                     sh '''
                     cd ansible-ressources/playbooks/
                     ls -l
@@ -46,7 +46,7 @@ pipeline {
 
                     sh '''
                     cd ansible-ressources/
-                    ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i inventory.ini playbooks/install_docker.yaml
+                    ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i inventory.ini playbooks/install-docker.yaml
                     '''
                 }
             }
