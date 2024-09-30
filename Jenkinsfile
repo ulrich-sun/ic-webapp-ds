@@ -31,6 +31,9 @@ pipeline {
                     image 'registry.gitlab.com/robconnolly/docker-ansible:latest'
                 }
             }
+            environment {
+                PRIVATE_AWS_KEY = credentials('private_aws_key')
+            }
             steps {
                 script {
                     def instanceIP = readFile('instance_ip.txt').trim()
