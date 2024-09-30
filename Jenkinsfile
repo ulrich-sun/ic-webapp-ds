@@ -37,11 +37,14 @@ pipeline {
                     sh '''
                     echo $PRIVATE_AWS_KEY > simple-stack.pem
                     chmod 400 simple-stack.pem
+                    pwd
+                    ls -l
                     '''
                     writeFile file: 'inventory.ini', text: "test-server\n${instanceIP} ansible_user=ubuntu ansible_ssh_private_key_file=simple-stack.pem"
                     sh '''
+                    ls -l
                     cd ansible-ressources/
-                    export ANSIBLE_ROLES_PATH=roles  # Set the roles path correctly
+                    export ANSIBLE_ROLES_PATH=roles
                     echo "Current directory:"
                     pwd
                     ls -l roles
