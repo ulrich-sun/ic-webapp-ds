@@ -1,11 +1,12 @@
+---
 # tasks file for install-docker
-- name: update system Ubuntu
+- name: Update system Ubuntu
   apt:
     update_cache: yes
     upgrade: dist
   when: ansible_os_family in ["Debian", "Ubuntu"]
 
-- name: install prerequisites Ubuntu
+- name: Install prerequisites Ubuntu
   apt:
     name: "{{ item }}"
     state: present
@@ -18,17 +19,16 @@
     - software-properties-common  
   when: ansible_os_family in ["Debian", "Ubuntu"]
 
-- name: add Docker’s official GPG key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
+- name: Download Docker GPG key
+  command: curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /usr/share/keyrings/docker.gpg
+  become: yes
 
-- name: set up the Docker stable repository
+- name: Set up the Docker stable repository
   apt_repository: 
-    repo: "deb [arch=$(dpkg --print-architecture) ] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    repo: "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
     state: present 
 
-- name: install docker
+- name: Install Docker
   apt:
     name: docker-ce
     state: present
@@ -38,19 +38,19 @@
     name: docker
     state: present
 
-- name: add user inside docker group
+- name: Add user inside docker group
   user:
     name: "{{ ansible_user }}"
     group: docker 
     append: yes 
 
-- name: start docker
+- name: Start Docker
   service:
     name: docker
     state: started
     enabled: yes
 
-- name: install docker compose
+- name: Install Docker Compose
   get_url:
     url: https://github.com/docker/compose/releases/download/v2.29.6/docker-compose-linux-x86_64
     dest: /usr/local/bin/docker-compose
