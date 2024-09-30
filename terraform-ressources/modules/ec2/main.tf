@@ -3,11 +3,11 @@ resource "aws_instance" "name" {
   instance_type = var.instance_type 
   vpc_security_group_ids = [ var.sg_id ]
   key_name = var.key_name
-  subnet_id = var.subnet_id 
+  #subnet_id = var.subnet_id 
   associate_public_ip_address = true
   ebs_block_device {
     device_name = "/dev/sdf"
-    volume_size = 10
+    volume_size = 20
     volume_type = "gp2"
   }
 
@@ -19,7 +19,7 @@ resource "aws_instance" "name" {
     Name = var.vm_name
   }
 
- provisioner "local-exec" {
-   command = "echo IP: ${self.public_ip} > /var/jenkins_home/workspace/devops/instance_ip.txt"
- }
+#  provisioner "local-exec" {
+#    command = "echo IP: ${self.public_ip} > /var/jenkins_home/workspace/devops/instance_ip.txt"
+#  }
 }

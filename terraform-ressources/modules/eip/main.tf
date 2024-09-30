@@ -3,4 +3,9 @@ resource "aws_eip" "eip" {
     tags = {
         Name = "eip"
     }
+    provisioner "local-exec" {
+        command = <<-EOT
+            echo ${self.public_ip} > instance_ip.txt
+        EOT
+  }
 } 

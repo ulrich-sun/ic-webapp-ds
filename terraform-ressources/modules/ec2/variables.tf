@@ -11,8 +11,8 @@ variable "key_name" {
   default = "sun"
 }
 
-variable "subnet_id" {
-}
+# variable "subnet_id" {
+# }
 
 variable "vm_name"{
   default = "ds-vm"

@@ -1,6 +1,6 @@
 resource "aws_security_group" "sg" {
     name = var.sg_name
-    vpc_id = var.vpc_id
+    # vpc_id = var.vpc_id
     ingress {
         from_port = 22
         to_port = 22

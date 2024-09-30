@@ -2,5 +2,5 @@ variable "sg_name" {
   default = "sg"
 }
 
-variable "vpc_id" {
-}
+# variable "vpc_id" {
+# }
