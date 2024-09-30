@@ -40,8 +40,12 @@ pipeline {
                     '''
                     writeFile file: 'inventory.ini', text: "test-server\n${instanceIP} ansible_user=ubuntu ansible_ssh_private_key_file=simple-stack.pem"
                     sh '''
-                    
-                    ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i inventory.ini ansible-ressources/playbooks/install-docker.yaml
+                    cd ansible-ressources/
+                    export ANSIBLE_ROLES_PATH=roles  # Set the roles path correctly
+                    echo "Current directory:"
+                    pwd
+                    ls -l roles
+                    ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i inventory.ini playbooks/install-docker.yaml
                     '''
                 }
             }
