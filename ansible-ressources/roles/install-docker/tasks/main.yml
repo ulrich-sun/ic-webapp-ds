@@ -1,10 +1,12 @@
-- name: Update system packages
+---
+# tasks file for install-docker
+- name: update system Ubuntu
   apt:
     update_cache: yes
     upgrade: dist
   when: ansible_os_family in ["Debian", "Ubuntu"]
 
-- name: Install prerequisites for Ubuntu
+- name: install prerequisites Ubuntu
   apt:
     name: "{{ item }}"
     state: present
@@ -15,48 +17,61 @@
     - ca-certificates
     - apt-transport-https
     - software-properties-common  
-    - python3-ssl
-    - openssl
   when: ansible_os_family in ["Debian", "Ubuntu"]
 
-- name: Add Docker GPG key
-  apt_key: 
-    url: https://download.docker.com/linux/ubuntu/gpg
+- name: install prerequisites CentOs
+  yum:
+    name: "{{ item }}"
     state: present
+  loop:
+    - yum-utils
+    - conntrack
+    - ca-certificates
+    - curl
+    - python3
+    - python3-pip
+  when: ansible_os_family in ["RedHat", "CentOS"]
+# - name: add gpg
+#   apt_key: 
+#     url: https://download.docker.com/linux/ubuntu/gpg
+#     state: present
 
-- name: Add Docker repository
-  apt_repository: 
-    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    state: present
+# - name: add docker repository
+#   apt_repository: 
+#     repo: "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable"
+#     state: present 
 
-- name: Update package index again after adding Docker repository
-  apt:
-    update_cache: yes
+# - name: docker install
+#   apt:
+#     name: docker-ce
+#     state: present
 
-- name: Install Docker
-  apt:
-    name: docker-ce
-    state: present
-
-- name: Ensure Docker group exists
+- name: install docker
+  get_url: 
+    url: https://get.docker.com
+    dest: /tmp/get-docker.sh
+    mode: '0755'
+- name: deploy
+  command: sh /tmp/get-docker.sh
+  become: yes 
+- name: Ensure docker group exists
   group:
     name: docker
     state: present
-
-- name: Add user to Docker group
+- name: add user inside docker group
   user:
     name: "{{ ansible_user }}"
     group: docker 
     append: yes 
 
-- name: Start Docker service
+- name: start docker
   service:
     name: docker
     state: started
     enabled: yes
 
-- name: Install Docker Compose
+- name: install docker compose
   get_url:
     url: https://github.com/docker/compose/releases/download/v2.29.6/docker-compose-linux-x86_64
-    dest: /usr/local/bin/docker-compose
+    dest: /usr/local/lib/docker-compose
     mode: '0755'
