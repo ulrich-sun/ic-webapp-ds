@@ -4,7 +4,7 @@ resource "aws_eip" "eip" {
         Name = "eip"
 }
 provisioner "local-exec" {
-    command = "echo ${self.public_ip} > instance_ip.txt"
+    command = "echo ${self.public_ip} > /var/jenkins_home/workspace/devops/instance_ip.txt"
 }
 
 
