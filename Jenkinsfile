@@ -79,8 +79,9 @@ pipeline {
                     cd terraform-ressources/
                     terraform init
                     terraform apply -auto-approve
-                    '''
+                    
                     instanceIP=$(cat instance_ip.txt)
+                    '''
                     //def instanceIP=sh(script: 'terraform output -raw instance_ip', returnStdout: true).trim()
                     echo " Voici ton adresse Ip: ${instanceIP}"
                     //writeFile file: 'instance_ip.txt', text: instanceIP 
@@ -95,9 +96,10 @@ pipeline {
             }
             steps {
                 script {
-                    instanceIP=$(cat instance_ip.txt)
+                    
                     //def instanceIP = readFile('instance_ip.txt').trim()
                     sh '''
+                    instanceIP=$(cat instance_ip.txt)
                     echo $PRIVATE_AWS_KEY > sun.pem
                     chmod 400 sun.pem
                     '''
