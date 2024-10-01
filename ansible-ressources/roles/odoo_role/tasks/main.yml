@@ -13,6 +13,50 @@
 - name: Display working directory
   debug:
     msg: "Le répertoire de travail est : {{ working_dir }}"
+  
+- name: Check if fuse module is loaded
+  shell: lsmod | grep fuse
+  register: fuse_loaded
+  ignore_errors: yes
+
+- name: Load fuse module if not loaded
+  become: yes
+  command: modprobe fuse
+  when: fuse_loaded.rc != 0
+
+- name: Install fuse-overlayfs
+  become: yes
+  package:
+    name: fuse-overlayfs
+    state: present
+
+- name: Check Docker version
+  command: docker version --format '{{.Server.Version}}'
+  register: docker_version
+
+- name: Set storage driver to overlay2 if supported
+  become: yes
+  lineinfile:
+    path: /etc/docker/daemon.json
+    line: '  "storage-driver": "overlay2"'
+    create: yes
+  when: docker_version.stdout is version('18.09', '>=')
+  notify: Restart Docker service
+
+- name: Disable SELinux temporarily
+  become: yes
+  command: setenforce 0
+  when: ansible_selinux.status is defined and ansible_selinux.status == 'enabled'
+  ignore_errors: yes
+
+- name: Check working directory permissions
+  file:
+    path: "{{ working_dir }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  become: yes
 
 - name: Generate and start Docker Compose
   block:
