@@ -124,10 +124,10 @@
     append: yes
   notify: Restart Docker service
 
-- name: Apply group changes
-  shell: newgrp docker
-  changed_when: false
-  notify: Restart Docker service
+# - name: Apply group changes
+#   shell: newgrp docker
+#   changed_when: false
+#   notify: Restart Docker service
 
 - name: Wait for Docker to be available
   wait_for:
