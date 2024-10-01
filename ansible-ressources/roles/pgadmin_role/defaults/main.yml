@@ -6,7 +6,11 @@ pg_admin_email: odoo@gmail.com
 pg_admin_password: odoo_pgadmin_password
 pgadmin_service_name: pgadmin
 pgadmin_container_name: pgadmin
+
+
+# Servers.json variable 
 pg_admin_init_config_name: docker_postgres
 pg_admin_init_config_group: docker_postgres_group
-pg_admin_init_config_host: "{{ ansible_host }}"
+pg_admin_init_config_host: "{{ postgres_container_name }}"
 pg_admin_init_config_username: odoo_user
+pg_admin_init_config_password: odoo_password

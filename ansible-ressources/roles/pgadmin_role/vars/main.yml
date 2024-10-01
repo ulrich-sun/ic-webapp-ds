@@ -1,2 +1,4 @@
 ---
 # vars file for pgadmin_role
+
+postgres_container_name: postgres
