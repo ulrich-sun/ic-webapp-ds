@@ -1,2 +1,7 @@
 ---
 # handlers file for odoo_role
+- name: Restart Docker service
+  become: yes
+  service:
+    name: docker
+    state: restarted
