@@ -9,3 +9,6 @@ postgres_service_name: postgres
 postgres_container_name: postgres
 odoo_service_name: odoo
 odoo_container_name: odoo
+
+target_dir: "/home/{{ ansible_user }}"
+fallback_dir: "/tmp"
