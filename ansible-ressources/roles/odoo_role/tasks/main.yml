@@ -14,15 +14,32 @@
   debug:
     msg: "Le répertoire de travail est : {{ working_dir }}"
 
-- name: Check if fuse module is loaded
-  shell: lsmod | grep fuse
-  register: fuse_loaded
+- name: Check if FUSE module is available
+  command: find /lib/modules/$(uname -r) -name 'fuse.ko*'
+  register: fuse_module_check
+  changed_when: false
   ignore_errors: yes
 
-- name: Load fuse module if not loaded
+- name: Install FUSE kernel module (Debian/Ubuntu)
+  become: yes
+  apt:
+    name: 
+      - linux-modules-extra-{{ ansible_kernel }}
+    state: present
+  when: fuse_module_check.stdout == "" and ansible_os_family in ["Debian", "Ubuntu"]
+
+- name: Install FUSE kernel module (RedHat/CentOS)
+  become: yes
+  yum:
+    name: 
+      - fuse
+      - fuse-libs
+    state: present
+  when: fuse_module_check.stdout == "" and ansible_os_family in ["RedHat", "CentOS"]
+
+- name: Load FUSE module
   become: yes
   command: modprobe fuse
-  when: fuse_loaded.rc != 0
   ignore_errors: yes
 
 - name: Install fuse-overlayfs (Debian/Ubuntu)
@@ -48,13 +65,17 @@
   set_fact:
     docker_version_number: "{{ docker_version.stdout | regex_search('([0-9]+\\.[0-9]+\\.[0-9]+)') | first }}"
 
-- name: Set storage driver to overlay2 if supported
+- name: Configure Docker to use fuse-overlayfs
   become: yes
-  lineinfile:
-    path: /etc/docker/daemon.json
-    line: '  "storage-driver": "overlay2"'
-    create: yes
-  when: docker_version_number is version('18.09', '>=')
+  copy:
+    content: |
+      {
+        "storage-driver": "overlay2",
+        "storage-opts": [
+          "overlay2.override_kernel_check=true"
+        ]
+      }
+    dest: /etc/docker/daemon.json
   notify: Restart Docker service
 
 - name: Disable SELinux temporarily
