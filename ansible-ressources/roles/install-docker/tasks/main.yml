@@ -42,7 +42,7 @@
     - docker-ce-cli 
     - containerd.io 
     - docker-buildx-plugin 
-    - docker-compose-plugi
+    - docker-compose-plugin
   when: ansible_os_family in ["RedHat", "CentOS"]
 
 # Docker installation on ubuntu 
