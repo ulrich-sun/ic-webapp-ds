@@ -1,2 +1,2 @@
-ansible_user: cloud_user
-ansible_password: Korpo98@
+ansible_ssh_pass: Passw0rd
+ansible_user: root
