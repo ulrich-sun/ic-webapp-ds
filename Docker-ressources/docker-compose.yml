@@ -1,3 +1,5 @@
+version: '3'
+
 services:
   web:
     container_name: odoo
@@ -16,6 +18,7 @@ services:
       - HOST=db
     networks:
       - icwebapp_network
+
   db:
     container_name: db
     image: postgres:10
@@ -28,18 +31,19 @@ services:
       - odoo-db-data:/var/lib/postgresql/data/pgdata
     networks:
       - icwebapp_network
-  
+
   ic-webapp:
     container_name: ic-webapp
     image: ulrichsteve/ic-webapp:v1.0
     environment:
-      - "ODOO_URL=" #add your ip:port
-      - "PGADMIN_URL=" #add your ip:port
+      - ODOO_URL=http://odoo:8069
+      - PGADMIN_URL=http://pgadmin:80
     ports:
       - "8080:8080"
     networks:
       - icwebapp_network
-  pg-admin:
+
+  pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
     environment:
@@ -48,11 +52,12 @@ services:
     volumes:
       - ./servers.json:/pgadmin4/servers.json
     depends_on:
-      - postgres
+      - db
     networks:
       - icwebapp_network
     ports:
-      - 80:80
+      - "80:80"
+
 volumes:
   odoo-web-data:
   odoo-db-data:
@@ -60,4 +65,3 @@ volumes:
 networks:
   icwebapp_network:
     driver: bridge
-    name: icwebapp_network
