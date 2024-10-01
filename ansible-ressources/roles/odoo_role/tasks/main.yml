@@ -58,8 +58,18 @@
 
 - name: Fail if FUSE module not loaded
   fail:
-    msg: "FUSE module could not be loaded. Please check kernel configuration. Last dmesg logs: {{ lookup('pipe', 'dmesg | tail -n 10') }}"
+    msg: "FUSE module could not be loaded. Please check kernel configuration. Last journal logs: {{ lookup('pipe', 'journalctl -xe | tail -n 10') }}"
   when: not fuse_loaded
+
+- name: Check SELinux status
+  command: getenforce
+  register: selinux_status
+  changed_when: false
+
+- name: Set SELinux to permissive mode if enforcing
+  become: yes
+  command: setenforce 0
+  when: selinux_status.stdout == "Enforcing"
 
 - name: Check if fuse-overlayfs is installed
   command: which fuse-overlayfs
@@ -174,5 +184,4 @@
 
 - name: Warn if fallback directory was used
   debug:
-    msg: "Attention : Le répertoire de repli ({{ fallback_dir }}) a été utilisé car {{ target_dir }} n'existe pas."
-  when: working_dir == fallback_dir
+    msg: "Attention 
