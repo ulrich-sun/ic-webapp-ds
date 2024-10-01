@@ -31,7 +31,7 @@ services:
   
   ic-webapp:
     container_name: ic-webapp
-    image: ic-webapp:v1.0
+    image: ulrichsteve/ic-webapp:v1.0
     environment:
       - "ODOO_URL="
       - "PGADMIN_URL="
@@ -45,6 +45,10 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=odoo@odoo.odoo
       - PGADMIN_DEFAULT_PASSWORD=odoo
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+    depends_on:
+      - postgres
     networks:
       - icwebapp_network
     ports:
