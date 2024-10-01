@@ -1,6 +1,7 @@
 ---
 # tasks file for install-docker
-# RedHat workflows
+
+# RedHat/CentOS workflows
 - name: Remove package on OS ["RedHat", "CentOS"]
   yum:
     name: "{{ item }}"
@@ -16,22 +17,23 @@
     - docker-engine
     - podman
     - runc
-  when: ansible_os_family in ["RedHat", "CentOS"]
+  when: ansible_distribution in ["RedHat", "CentOS"]
 
 - name: Install Prerequisites ["RedHat", "CentOS"]
   yum:
     name: yum-utils
     state: present
-  when: ansible_os_family in ["RedHat", "CentOS"]
+  when: ansible_distribution in ["RedHat", "CentOS"]
+
 - name: Add docker repository ["RedHat", "CentOS"]
   yum_repository:
     name: docker-ce-stable
     description: Docker CE Stable - $basearch
-    baseurl: https://download.docker.com/linux/rhel/$releasever/$basearch/stable
+    baseurl: https://download.docker.com/linux/{{ ansible_distribution | lower }}/$releasever/$basearch/stable
     enabled: yes
     gpgcheck: yes
-    gpgkey: https://download.docker.com/linux/rhel/gpg
-  when: ansible_os_family in ["RedHat", "CentOS"]
+    gpgkey: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
+  when: ansible_distribution in ["RedHat", "CentOS"]
 
 - name: Install docker ["RedHat", "CentOS"]
   yum:
@@ -43,11 +45,11 @@
     - containerd.io 
     - docker-buildx-plugin 
     - docker-compose-plugin
-  when: ansible_os_family in ["RedHat", "CentOS"]
+  when: ansible_distribution in ["RedHat", "CentOS"]
 
-# Docker installation on ubuntu 
+# Docker installation on Ubuntu/Debian
 
-- name: remove old package ["Ubuntu", "Debian"]
+- name: Remove old package ["Ubuntu", "Debian"]
   apt:
     name: "{{ item }}"
     state: absent
@@ -59,15 +61,14 @@
     - podman-docker 
     - containerd 
     - runc
-  when: ansible_os_family in ["Ubuntu", "Debian"]
+  when: ansible_distribution in ["Ubuntu", "Debian"]
 
 - name: Update os ["Ubuntu", "Debian"]
   apt:
     name: '*'
     state: present
     update_cache: true
-  when: ansible_os_family in ["Ubuntu", "Debian"]
- 
+  when: ansible_distribution in ["Ubuntu", "Debian"]
 
 - name: Install required system packages ["Ubuntu", "Debian"]
   apt:
@@ -76,13 +77,13 @@
       - curl
     state: present
     update_cache: true
-  when: ansible_os_family in ["Ubuntu", "Debian"]
+  when: ansible_distribution in ["Ubuntu", "Debian"]
 
 - name: Add Docker repository ["Ubuntu", "Debian"]
   block:
     - name: Download Docker GPG key
       get_url:
-        url: https://download.docker.com/linux/ubuntu/gpg
+        url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
         dest: /etc/apt/keyrings/docker.asc
         mode: '0644'
 
@@ -93,14 +94,14 @@
 
     - name: Add Docker repository
       apt_repository:
-        repo: "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        repo: "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
         state: present
         filename: docker
 
     - name: Update apt cache
       apt:
         update_cache: yes
-  when: ansible_os_family in ["Ubuntu", "Debian"]
+  when: ansible_distribution in ["Ubuntu", "Debian"]
 
 - name: Install Docker ["Ubuntu", "Debian"]
   apt:
@@ -109,25 +110,22 @@
       - docker-ce-cli
       - containerd.io
     state: present
-  when: ansible_os_family in ["Ubuntu", "Debian"]
+  when: ansible_distribution in ["Ubuntu", "Debian"]
 
+# Common tasks for all distributions
 
 - name: Ensure Docker service is running and enabled
   service:
     name: docker
     state: started
     enabled: true
+
 - name: Add user to docker group
   user:
     name: "{{ ansible_user }}"
     groups: docker
     append: yes
   notify: Restart Docker service
-
-# - name: Apply group changes
-#   shell: newgrp docker
-#   changed_when: false
-#   notify: Restart Docker service
 
 - name: Wait for Docker to be available
   wait_for:
