@@ -184,4 +184,5 @@
 
 - name: Warn if fallback directory was used
   debug:
-    msg: "Attention 
+    msg: "Attention : Le répertoire de repli ({{ fallback_dir }}) a été utilisé car {{ target_dir }} n'existe pas."
+  when: working_dir == fallback_dir
