@@ -58,7 +58,7 @@
 
 - name: Fail if FUSE module not loaded
   fail:
-    msg: "FUSE module could not be loaded. Please check kernel configuration."
+    msg: "FUSE module could not be loaded. Please check kernel configuration. Last dmesg logs: {{ lookup('pipe', 'dmesg | tail -n 10') }}"
   when: not fuse_loaded
 
 - name: Check if fuse-overlayfs is installed
