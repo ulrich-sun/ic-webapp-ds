@@ -13,7 +13,7 @@
 - name: Display working directory
   debug:
     msg: "Le répertoire de travail est : {{ working_dir }}"
-  
+
 - name: Check if fuse module is loaded
   shell: lsmod | grep fuse
   register: fuse_loaded
@@ -23,13 +23,21 @@
   become: yes
   command: modprobe fuse
   when: fuse_loaded.rc != 0
+  ignore_errors: yes
 
-- name: Install fuse-overlayfs
+- name: Install fuse-overlayfs (Debian/Ubuntu)
   become: yes
-  package:
+  apt:
     name: fuse-overlayfs
     state: present
   when: ansible_os_family in ["Debian", "Ubuntu"]
+
+- name: Install fuse-overlayfs (RedHat/CentOS)
+  become: yes
+  yum:
+    name: fuse-overlayfs
+    state: present
+  when: ansible_os_family in ["RedHat", "CentOS"]
 
 - name: Check Docker version
   command: docker --version
@@ -76,7 +84,7 @@
       command: "docker compose -f {{ working_dir }}/docker-compose-odoo.yml up -d"
   
   vars:
-    ansible_become: yes  # Si vous avez besoin de privilèges élevés
+    ansible_become: yes
   when: working_dir is defined
 
 - name: Warn if fallback directory was used
