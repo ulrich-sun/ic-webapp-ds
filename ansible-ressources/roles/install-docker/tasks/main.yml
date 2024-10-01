@@ -50,7 +50,7 @@
 - name: remove old package ["Ubuntu", "Debian"]
   apt:
     name: "{{ item }}"
-    state: removed
+    state: absent
   loop:
     - docker.io 
     - docker-doc 
