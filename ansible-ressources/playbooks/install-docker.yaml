@@ -3,6 +3,6 @@
   become: true
   roles:
     - install-docker
-    - odoo_role
-    - pgadmin_role
-    - icwebapp_role
+    # - odoo_role
+    # - pgadmin_role
+    # - icwebapp_role
