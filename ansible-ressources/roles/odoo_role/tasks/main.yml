@@ -102,20 +102,17 @@
   changed_when: false
   failed_when: docker_info.rc != 0
 
-- name: Generate and start Docker Compose
-  block:
-    - name: "Generate docker compose file"
-      template:
-        src: "docker-compose-odoo.yml.j2"
-        dest: "{{ working_dir }}/docker-compose-odoo.yml"
-        mode: '0644'
+- name: Generate docker compose file
+  template:
+    src: "docker-compose-odoo.yml.j2"
+    dest: "{{ working_dir }}/docker-compose-odoo.yml"
+    mode: '0644'
+  when: docker_info.rc == 0
 
-    - name: "Start docker compose"
-      command: "docker compose -f {{ working_dir }}/docker-compose-odoo.yml up -d"
-  
-  vars:
-    ansible_become: yes
-  when: docker_info.rc == 0 and working_dir is defined
+- name: Start docker compose
+  command: "docker compose -f {{ working_dir }}/docker-compose-odoo.yml up -d"
+  become: yes
+  when: docker_info.rc == 0
 
 - name: Warn if fallback directory was used
   debug:
