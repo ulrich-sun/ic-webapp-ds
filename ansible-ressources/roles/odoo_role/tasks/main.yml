@@ -44,18 +44,22 @@
   ignore_errors: yes
 
 - name: Confirm FUSE module loaded
-  command: lsmod | grep fuse
-  register: fuse_check
+  command: lsmod
+  register: lsmod_output
   changed_when: false
+
+- name: Check if FUSE is in the loaded modules
+  set_fact:
+    fuse_loaded: "{{ 'fuse' in lsmod_output.stdout }}"
 
 - name: Display FUSE module status
   debug:
-    msg: "FUSE module loaded: {{ fuse_check.stdout }}"
+    msg: "FUSE module loaded: {{ fuse_loaded }}"
 
 - name: Fail if FUSE module not loaded
   fail:
     msg: "FUSE module could not be loaded. Please check kernel configuration."
-  when: fuse_load.rc != 0 or fuse_check.stdout == ""
+  when: not fuse_loaded
 
 - name: Check if fuse-overlayfs is installed
   command: which fuse-overlayfs
