@@ -48,19 +48,25 @@
   ignore_errors: yes
   changed_when: false
 
-- name: Install fuse-overlayfs (Debian/Ubuntu)
+- name: Check fuse-overlayfs version
+  command: fuse-overlayfs --version
+  register: fuse_overlayfs_version
+  ignore_errors: yes
+  changed_when: false
+
+- name: Install or update fuse-overlayfs (Debian/Ubuntu)
   become: yes
   apt:
     name: fuse-overlayfs
-    state: present
-  when: fuse_overlayfs_check.rc != 0 and ansible_os_family in ["Debian", "Ubuntu"]
+    state: latest
+  when: fuse_overlayfs_check.rc != 0 or (fuse_overlayfs_version.rc == 0 and ansible_os_family in ["Debian", "Ubuntu"])
 
-- name: Install fuse-overlayfs (RedHat/CentOS)
+- name: Install or update fuse-overlayfs (RedHat/CentOS)
   become: yes
   yum:
     name: fuse-overlayfs
-    state: present
-  when: fuse_overlayfs_check.rc != 0 and ansible_os_family in ["RedHat", "CentOS"]
+    state: latest
+  when: fuse_overlayfs_check.rc != 0 or (fuse_overlayfs_version.rc == 0 and ansible_os_family in ["RedHat", "CentOS"])
 
 - name: Check Docker version
   command: docker --version
@@ -71,14 +77,24 @@
   set_fact:
     docker_version_number: "{{ docker_version.stdout | regex_search('([0-9]+\\.[0-9]+\\.[0-9]+)') | first }}"
 
-- name: Configure Docker to use overlay2 storage driver
+- name: Configure Docker to use overlay2 storage driver and disable fuse-overlayfs
   become: yes
   copy:
     content: |
       {
-        "storage-driver": "overlay2"
+        "storage-driver": "overlay2",
+        "storage-opts": ["overlay2.override_kernel_check=true"],
+        "features": {"buildkit": true},
+        "experimental": false
       }
     dest: /etc/docker/daemon.json
+  notify: Restart Docker service
+
+- name: Ensure Docker socket permissions are correct
+  become: yes
+  file:
+    path: /var/run/docker.sock
+    mode: '0666'
   notify: Restart Docker service
 
 - name: Disable SELinux temporarily
@@ -96,6 +112,13 @@
     group: "{{ ansible_user }}"
   become: yes
 
+- name: Ensure Docker service is started and enabled
+  become: yes
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
 - name: Verify Docker is running
   command: docker info
   register: docker_info
@@ -109,10 +132,16 @@
     mode: '0644'
   when: docker_info.rc == 0
 
-- name: Start docker compose
-  command: "docker compose -f {{ working_dir }}/docker-compose-odoo.yml up -d"
+- name: Start docker compose with debug info
+  command: "docker compose -f {{ working_dir }}/docker-compose-odoo.yml up -d --verbose"
   become: yes
+  register: docker_compose_result
   when: docker_info.rc == 0
+
+- name: Display Docker Compose output
+  debug:
+    var: docker_compose_result
+  when: docker_compose_result is defined
 
 - name: Warn if fallback directory was used
   debug:
